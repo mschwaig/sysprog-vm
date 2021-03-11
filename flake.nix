@@ -13,6 +13,8 @@
                virtualbox = {
                  params = {
                    cpus = "2";
+                   graphicscontroller = "vboxsvga";
+                   vram = "128";
                    usb = "off";
                    usbehci = "off";
                    mouse = "ps2";
@@ -20,10 +22,10 @@
                    ostype = "Linux_64";
                    description = ''
                      Regular user
-                     name: developer, password: sysprog
+                     name: developer, password: developer
 
                      Root user
-                     name: root, password: sysprog
+                     name: root, password: developer
                    '';
                  };
                  memorySize = 4096;
@@ -47,7 +49,7 @@
 
             system.autoUpgrade = {
               enable = true;
-              flake = "git+https://github.com/mschwaig/sysprog-vm.git";
+              flake = "github:mschwaig/sysprog-vm/main";
               allowReboot = true;
               dates = "*:0/10";
               randomizedDelaySec = "1min";
@@ -55,11 +57,33 @@
 
             # add system packages
             environment.systemPackages = with pkgs; [
-              gcc gnumake valgrind gdb binutils git glxinfo (neovim.override { vimAlias = true; }) nano
 
-              htop zip unzip gnutar
+              # terminal development tools
+              gcc gnumake valgrind gdb binutils git
 
-              firefox codeblocks gnome3.gedit
+              # terminal text editors vim and nano
+              (neovim.override { vimAlias = true; }) nano
+
+              # system load montitoring tool
+              htop
+
+              # graphics diagnosis tool
+              glxinfo
+
+              # archiving terminal utilities
+              zip unzip gnutar
+
+              # archiving gui
+              ark
+
+              # gui text editor
+              leafpad
+
+              # browser
+              firefox
+
+              # IDE
+              codeblocks
             ];
             programs.vim.defaultEditor = true;
 
@@ -68,8 +92,17 @@
               desktopManager.plasma5 = {
                 enable = true;
               };
+
+              displayManager = {
+                autoLogin.enable = true;
+                autoLogin.user = "developer";
+              };
+              layout = "de,us";
               libinput.enable = true; # for touchpad support on many laptops
             };
+
+            # use same keyboard config as xserver
+            console.useXkbConfig = true;
 
             # Enable sound in virtualbox appliances.
             hardware.pulseaudio.enable = true;
@@ -79,14 +112,14 @@
             networking.firewall.allowPing = true;
 
            users.users.root = {
-              initialPassword = "sysprog";
+              initialPassword = "developer";
             };
 
             users.users.developer = {
               isNormalUser = true;
               extraGroups = [ "wheel" ];
               description = "Developer";
-              initialPassword = "sysprog";
+              initialPassword = "developer";
             };
           })
         ];
