@@ -57,6 +57,8 @@
             environment.systemPackages = with pkgs; [
               gcc gnumake valgrind gdb binutils git glxinfo (neovim.override { vimAlias = true; }) nano
 
+              htop zip unzip gnutar
+
               firefox codeblocks gnome3.gedit
             ];
             programs.vim.defaultEditor = true;
