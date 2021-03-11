@@ -108,7 +108,7 @@
             hardware.pulseaudio.enable = true;
 
             boot.cleanTmpDir = true;
-            networking.hostName = "sysprog-dev";
+            networking.hostName = "sysprog-vm";
             networking.firewall.allowPing = true;
 
            users.users.root = {
