@@ -1,7 +1,11 @@
 {
-  inputs.nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
+  inputs = {
+    nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
+    home-manager.url = "github:nix-community/home-manager";
+    home-manager.inputs.nixpkgs.follows = "nixpkgs";
+  };
 
-  outputs = { self, nixpkgs }: {
+  outputs = { self, nixpkgs, home-manager }: {
 
     nixosConfigurations.sysprog-vm = nixpkgs.lib.nixosSystem {
       system = "x86_64-linux";
@@ -9,7 +13,14 @@
         [
           ({ pkgs, modulesPath, ... }: {
 
-             imports = [ (modulesPath + "/virtualisation/virtualbox-image.nix") {
+            imports = [
+              home-manager.nixosModules.home-manager {
+              home-manager.useGlobalPkgs = true;
+              home-manager.useUserPackages = true;
+              home-manager.users.developer = import ./home.nix;
+            }
+
+              (modulesPath + "/virtualisation/virtualbox-image.nix") {
                virtualbox = {
                  params = {
                    cpus = "2";
@@ -50,7 +61,7 @@
             system.autoUpgrade = {
               enable = true;
               flake = "github:mschwaig/sysprog-vm/main";
-              allowReboot = true;
+              allowReboot = false;
               dates = "*:0/10";
               randomizedDelaySec = "1min";
             };
