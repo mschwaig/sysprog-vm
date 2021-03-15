@@ -3,15 +3,6 @@ let
   course-url = "https://moodle.jku.at/jku/course/view.php?id=14701";
 in
 {
-
-  programs.firefox.profiles.default = {
-    id = 0;
-    settings = {
-      "app.update.auto" = false;
-      "browser.startup.homepage" = course-url;
-    };
-  };
-
   home.file = {
     "Desktop/firefox.desktop".text = (builtins.readFile ./desktop/firefox.desktop);
     "Desktop/codeblocks.desktop".text = (builtins.readFile ./desktop/codeblocks.desktop);
