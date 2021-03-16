@@ -58,6 +58,8 @@
               '';
             };
 
+            time.timeZone = "Europe/Vienna";
+
             system.autoUpgrade = {
               enable = true;
               flake = "github:mschwaig/sysprog-vm/main";
