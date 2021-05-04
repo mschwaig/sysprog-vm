@@ -72,7 +72,10 @@
             environment.systemPackages = with pkgs; [
 
               # terminal development tools
-              gcc gnumake valgrind gdb binutils git
+              gcc gnumake valgrind gdb binutils git manpages python38
+
+              # debugging in a browser
+              gdbgui
 
               # terminal text editors vim and nano
               (neovim.override { vimAlias = true; }) nano
@@ -134,6 +137,31 @@
               description = "Developer";
               initialPassword = "developer";
             };
+
+            fonts.fontconfig.localConf = ''
+              <?xml version="1.0"?>
+              <!DOCTYPE fontconfig SYSTEM "fonts.dtd">
+              <fontconfig>
+                <alias binding="weak">
+                  <family>monospace</family>
+                  <prefer>
+                    <family>emoji</family>
+                  </prefer>
+                </alias>
+                <alias binding="weak">
+                  <family>sans-serif</family>
+                  <prefer>
+                    <family>emoji</family>
+                  </prefer>
+                </alias>
+                <alias binding="weak">
+                  <family>serif</family>
+                  <prefer>
+                    <family>emoji</family>
+                  </prefer>
+                </alias>
+              </fontconfig>
+            '';
           })
         ];
       };
