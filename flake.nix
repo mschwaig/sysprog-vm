@@ -40,7 +40,7 @@
                    '';
                  };
                  memorySize = 4096;
-                 vmName = "sysprog 2021S";
+                 vmName = "sysprog 2021WT";
                };
              }];
             # Let 'nixos-version --json' know about the Git revision
@@ -89,12 +89,6 @@
               # archiving terminal utilities
               zip unzip gnutar
 
-              # archiving gui
-              ark
-
-              # gui text editor
-              leafpad
-
               # browser
               firefox
 
@@ -103,9 +97,24 @@
             ];
             programs.vim.defaultEditor = true;
 
+            environment.gnome.excludePackages = [
+              pkgs.gnome.atomix
+              pkgs.gnome.cheese
+              pkgs.gnome.epiphany
+              pkgs.gnome.geary
+              pkgs.gnome.gnome-music
+              pkgs.gnome.hitori
+              pkgs.gnome.iagno
+              pkgs.gnome-photos
+              pkgs.gnome.tali
+              pkgs.gnome.totem
+            ];
+
             services.xserver = {
               enable = true;
-              desktopManager.gnome.enable = true;
+              desktopManager.gnome = {
+                enable = true;
+              };
 
               displayManager = {
                 autoLogin.enable = true;

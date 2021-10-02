@@ -2,13 +2,21 @@
 let
   course-url = "https://moodle.jku.at/jku/course/view.php?id=16027";
 in
-{
+  {
+    dconf.settings = {
+      "org/gnome/shell" = {
+        favorite-apps = [
+          "firefox.desktop"
+          "codeblocks.desktop"
+          "org.gnome.Nautilus.desktop"
+          "moodle-course.desktop"
+          "org.gnome.Terminal.desktop"
+          "org.gnome.gedit.desktop"
+        ];
+      };
+    };
+  # TODO: fix this so that is shows up in gnome
   home.file = {
-    "Desktop/firefox.desktop".text = (builtins.readFile ./desktop/firefox.desktop);
-    "Desktop/codeblocks.desktop".text = (builtins.readFile ./desktop/codeblocks.desktop);
-    "Desktop/leafpad.desktop".text = (builtins.readFile ./desktop/leafpad.desktop);
-    "Desktop/org.kde.konsole.desktop".text = (builtins.readFile ./desktop/org.kde.konsole.desktop);
-    "Desktop/org.kde.ark.desktop".text = (builtins.readFile ./desktop/org.kde.ark.desktop);
     "Desktop/moodle-course.desktop".text = ''
       [Desktop Entry]
       Icon=text-html
