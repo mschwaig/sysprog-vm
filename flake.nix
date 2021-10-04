@@ -72,7 +72,7 @@
             environment.systemPackages = with pkgs; [
 
               # terminal development tools
-              gcc gnumake valgrind gdb binutils git manpages python38
+              gcc10 clang_12 gnumake valgrind gdb binutils git manpages python38
 
               # debugging in a browser
               gdbgui
