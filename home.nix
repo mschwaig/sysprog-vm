@@ -1,6 +1,6 @@
 { ... }:
 let
-  course-url = "https://moodle.jku.at/jku/course/view.php?id=14701";
+  course-url = "https://moodle.jku.at/jku/course/view.php?id=16027";
 in
 {
   home.file = {
