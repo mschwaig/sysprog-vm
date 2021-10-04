@@ -40,7 +40,7 @@
                    '';
                  };
                  memorySize = 4096;
-                 vmName = "sysprog 2021S";
+                 vmName = "sysprog 2021WT";
                };
              }];
             # Let 'nixos-version --json' know about the Git revision
