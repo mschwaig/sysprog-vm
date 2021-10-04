@@ -105,9 +105,7 @@
 
             services.xserver = {
               enable = true;
-              desktopManager.plasma5 = {
-                enable = true;
-              };
+              desktopManager.gnome.enable = true;
 
               displayManager = {
                 autoLogin.enable = true;
@@ -137,31 +135,6 @@
               description = "Developer";
               initialPassword = "developer";
             };
-
-            fonts.fontconfig.localConf = ''
-              <?xml version="1.0"?>
-              <!DOCTYPE fontconfig SYSTEM "fonts.dtd">
-              <fontconfig>
-                <alias binding="weak">
-                  <family>monospace</family>
-                  <prefer>
-                    <family>emoji</family>
-                  </prefer>
-                </alias>
-                <alias binding="weak">
-                  <family>sans-serif</family>
-                  <prefer>
-                    <family>emoji</family>
-                  </prefer>
-                </alias>
-                <alias binding="weak">
-                  <family>serif</family>
-                  <prefer>
-                    <family>emoji</family>
-                  </prefer>
-                </alias>
-              </fontconfig>
-            '';
           })
         ];
       };
