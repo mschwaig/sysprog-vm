@@ -106,6 +106,7 @@
               pkgs.gnome.hitori
               pkgs.gnome.iagno
               pkgs.gnome-photos
+              pkgs.gnome.seahorse
               pkgs.gnome.tali
               pkgs.gnome.totem
             ];
