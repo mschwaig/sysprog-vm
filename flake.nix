@@ -24,7 +24,7 @@
                virtualbox = {
                  params = {
                    cpus = "2";
-                   graphicscontroller = "vboxsvga";
+                   graphicscontroller = "vmsvga";
                    vram = "128";
                    usb = "off";
                    usbehci = "off";
