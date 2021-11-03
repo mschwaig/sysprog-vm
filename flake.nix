@@ -133,7 +133,7 @@
 
             users.users.developer = {
               isNormalUser = true;
-              extraGroups = [ "wheel" ];
+              extraGroups = [ "wheel" "vboxsf" ];
               description = "Developer";
               initialPassword = "developer";
             };
