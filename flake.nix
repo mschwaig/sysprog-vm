@@ -89,12 +89,6 @@
               # archiving terminal utilities
               zip unzip gnutar
 
-              # archiving gui
-              ark
-
-              # gui text editor
-              leafpad
-
               # browser
               firefox
 
@@ -103,9 +97,23 @@
             ];
             programs.vim.defaultEditor = true;
 
+            environment.gnome.excludePackages = [
+              pkgs.gnome.atomix
+              pkgs.gnome.cheese
+              pkgs.gnome.epiphany
+              pkgs.gnome.geary
+              pkgs.gnome.gnome-music
+              pkgs.gnome.hitori
+              pkgs.gnome.iagno
+              pkgs.gnome-photos
+              pkgs.gnome.seahorse
+              pkgs.gnome.tali
+              pkgs.gnome.totem
+            ];
+
             services.xserver = {
               enable = true;
-              desktopManager.plasma5 = {
+              desktopManager.gnome = {
                 enable = true;
               };
 
@@ -137,31 +145,6 @@
               description = "Developer";
               initialPassword = "developer";
             };
-
-            fonts.fontconfig.localConf = ''
-              <?xml version="1.0"?>
-              <!DOCTYPE fontconfig SYSTEM "fonts.dtd">
-              <fontconfig>
-                <alias binding="weak">
-                  <family>monospace</family>
-                  <prefer>
-                    <family>emoji</family>
-                  </prefer>
-                </alias>
-                <alias binding="weak">
-                  <family>sans-serif</family>
-                  <prefer>
-                    <family>emoji</family>
-                  </prefer>
-                </alias>
-                <alias binding="weak">
-                  <family>serif</family>
-                  <prefer>
-                    <family>emoji</family>
-                  </prefer>
-                </alias>
-              </fontconfig>
-            '';
           })
         ];
       };
