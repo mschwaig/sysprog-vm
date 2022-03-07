@@ -11,8 +11,17 @@
       system = "x86_64-linux";
       modules =
         [
-          ({ pkgs, modulesPath, ... }: {
-
+          ({ pkgs, modulesPath, ... }:
+          let
+            codeblocks_patched = pkgs.codeblocks.overrideAttrs (attrs: {
+              patches = attrs.patches ++ [ ./envar_config.patch ];
+              nativeBuildInputs = attrs.nativeBuildInputs ++ [ pkgs.makeWrapper ];
+              postInstall = ''
+                wrapProgram "$out/bin/codeblocks" \
+                --prefix CB_DEFAULT_CONSOLE_TERM : "gnome-terminal -t \$TITLE -x" \
+              '';
+            });
+          in {
             imports = [
               home-manager.nixosModules.home-manager {
               home-manager.useGlobalPkgs = true;
@@ -93,7 +102,7 @@
               firefox
 
               # IDE
-              codeblocks
+              codeblocks_patched
             ];
             programs.vim.defaultEditor = true;
 

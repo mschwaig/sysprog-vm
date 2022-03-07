@@ -1,0 +1,212 @@
+diff --git a/src/include/globals.h b/src/include/globals.h
+index 566dbb6..46d337e 100644
+--- a/src/include/globals.h
++++ b/src/include/globals.h
+@@ -178,8 +178,6 @@ typedef wxString HighlightLanguage;
+ 
+ extern DLLIMPORT const wxString DEFAULT_WORKSPACE;
+ extern DLLIMPORT const wxString DEFAULT_ARRAY_SEP;
+-extern DLLIMPORT const wxString DEFAULT_CONSOLE_TERM;
+-extern DLLIMPORT const wxString DEFAULT_CONSOLE_SHELL;
+ extern DLLIMPORT const wxString cbDEFAULT_OPEN_FOLDER_CMD;
+ 
+ // global helper funcs
+@@ -209,6 +207,10 @@ extern DLLIMPORT wxFontEncoding DetectEncodingAndConvert(const char* strIn, wxSt
+ 
+ /// Return an integer representation of a platform string
+ extern DLLIMPORT int GetPlatformsFromString(const wxString& platforms);
++
++extern DLLIMPORT wxString GetDefaultConsoleTerm();
++extern DLLIMPORT wxString GetDefaultConsoleShell();
++
+ /// Return a string representation of a platform / multiple platforms
+ extern DLLIMPORT wxString GetStringFromPlatforms(int platforms, bool forceSeparate = false);
+ 
+diff --git a/src/plugins/compilergcc/compilergcc.cpp b/src/plugins/compilergcc/compilergcc.cpp
+index b1d56ce..fbd680c 100644
+--- a/src/plugins/compilergcc/compilergcc.cpp
++++ b/src/plugins/compilergcc/compilergcc.cpp
+@@ -1364,7 +1364,7 @@ int CompilerGCC::DoRunQueue()
+         // piping and other shell features can be evaluated.
+         if (!platform::windows)
+         {
+-            wxString shell = Manager::Get()->GetConfigManager(_T("app"))->Read(_T("/console_shell"), DEFAULT_CONSOLE_SHELL);
++            wxString shell = Manager::Get()->GetConfigManager(_T("app"))->Read(_T("/console_shell"), GetDefaultConsoleShell());
+             cmd->command = shell + _T(" '") + cmd->command + _T("'");
+         }
+     }
+@@ -1825,7 +1825,7 @@ int CompilerGCC::RunSingleFile(const wxString& filename)
+     if (!platform::windows)
+     {
+         // for non-win platforms, use m_ConsoleTerm to run the console app
+-        wxString term = Manager::Get()->GetConfigManager(_T("app"))->Read(_T("/console_terminal"), DEFAULT_CONSOLE_TERM);
++        wxString term = Manager::Get()->GetConfigManager(_T("app"))->Read(_T("/console_terminal"), GetDefaultConsoleTerm());
+         term.Replace(_T("$TITLE"), _T("'") + exe_filename + _T("'"));
+         command << term << strSPACE;
+     }
+@@ -1965,7 +1965,7 @@ int CompilerGCC::Run(ProjectBuildTarget* target)
+         if (!platform::windows)
+         {
+             // for non-win platforms, use m_ConsoleTerm to run the console app
+-            wxString term = Manager::Get()->GetConfigManager(_T("app"))->Read(_T("/console_terminal"), DEFAULT_CONSOLE_TERM);
++            wxString term = Manager::Get()->GetConfigManager(_T("app"))->Read(_T("/console_terminal"), GetDefaultConsoleTerm());
+             term.Replace(_T("$TITLE"), titleStr);
+             term.Replace(_T("$WORKDIR"), dirStr);
+             cmd << term << strSPACE;
+@@ -1977,7 +1977,7 @@ int CompilerGCC::Run(ProjectBuildTarget* target)
+                 // "The csh is a tool utterly inadequate for programming,
+                 //  and its use for such purposes should be strictly banned!"
+                 //                 -- Csh Programming Considered Harmful
+-                command << DEFAULT_CONSOLE_SHELL << strSPACE;
++                command << GetDefaultConsoleShell() << strSPACE;
+                 // each shell execution must be enclosed to "":
+                 // xterm -T X -e /bin/sh -c "/usr/bin/cb_console_runner X"
+                 // here is first \"
+diff --git a/src/plugins/contrib/ToolsPlus/ToolsPlus.cpp b/src/plugins/contrib/ToolsPlus/ToolsPlus.cpp
+index 7886495..2a34f6e 100644
+--- a/src/plugins/contrib/ToolsPlus/ToolsPlus.cpp
++++ b/src/plugins/contrib/ToolsPlus/ToolsPlus.cpp
+@@ -405,7 +405,7 @@ void ToolsPlus::OnRunTarget(wxCommandEvent& event)
+         wxString cmdline;
+ #ifndef __WXMSW__
+         // for non-win platforms, use m_ConsoleTerm to run the console app
+-        wxString term = Manager::Get()->GetConfigManager(_T("app"))->Read(_T("/console_terminal"), DEFAULT_CONSOLE_TERM);
++        wxString term = Manager::Get()->GetConfigManager(_T("app"))->Read(_T("/console_terminal"), GetDefaultConsoleTerm());
+         term.Replace(_T("$TITLE"), _T("'") + consolename + _T("'"));
+         cmdline<< term << _T(" ");
+         #define CONSOLE_RUNNER "cb_console_runner"
+diff --git a/src/plugins/debuggergdb/debuggergdb.cpp b/src/plugins/debuggergdb/debuggergdb.cpp
+index b79a7a1..b45d96c 100644
+--- a/src/plugins/debuggergdb/debuggergdb.cpp
++++ b/src/plugins/debuggergdb/debuggergdb.cpp
+@@ -541,7 +541,7 @@ static wxString GetShellString()
+     if (platform::windows)
+         return wxEmptyString;
+     wxString shell = Manager::Get()->GetConfigManager(_T("app"))->Read(_T("/console_shell"),
+-                                                                       DEFAULT_CONSOLE_SHELL);
++                                                                       GetDefaultConsoleShell());
+     // GDB expects the SHELL variable's value to be a path to the shell's executable, so we need to
+     // remove all parameters and do some trimming.
+     shell.Trim(false);
+diff --git a/src/sdk/cbplugin.cpp b/src/sdk/cbplugin.cpp
+index 53e132f..5366890 100644
+--- a/src/sdk/cbplugin.cpp
++++ b/src/sdk/cbplugin.cpp
+@@ -839,7 +839,7 @@ int cbDebuggerPlugin::RunNixConsole(wxString &consoleTty)
+     wxString cmd;
+     int consolePid = 0;
+     // Use the terminal specified by the user in the Settings -> Environment.
+-    wxString term = Manager::Get()->GetConfigManager(_T("app"))->Read(_T("/console_terminal"), DEFAULT_CONSOLE_TERM);
++    wxString term = Manager::Get()->GetConfigManager(_T("app"))->Read(_T("/console_terminal"), GetDefaultConsoleTerm());
+ 
+     term.Replace(_T("$TITLE"), wxString(wxT("'"))+_("Program Console")+wxT("'"));
+     cmd << term << _T(" ");
+diff --git a/src/sdk/editormanager.cpp b/src/sdk/editormanager.cpp
+index dcc19cd..9cc362b 100644
+--- a/src/sdk/editormanager.cpp
++++ b/src/sdk/editormanager.cpp
+@@ -1155,7 +1155,7 @@ static OpenContainingFolderData detectNautilus(const wxString &command, ConfigMa
+     // If the user hasn't changed the command, try to detect nautilus using xdg-mime.
+     if (command == cbDEFAULT_OPEN_FOLDER_CMD)
+     {
+-        const wxString shell = appConfig->Read(_T("/console_shell"), DEFAULT_CONSOLE_SHELL);
++        const wxString shell = appConfig->Read(_T("/console_shell"), GetDefaultConsoleShell());
+         const wxString cmdGetManager = shell + wxT(" 'xdg-mime query default inode/directory'");
+         wxArrayString output, errors;
+         wxExecute(cmdGetManager, output, errors, wxEXEC_SYNC);
+diff --git a/src/sdk/globals.cpp b/src/sdk/globals.cpp
+index 0c81100..caf4ebc 100644
+--- a/src/sdk/globals.cpp
++++ b/src/sdk/globals.cpp
+@@ -40,6 +40,7 @@
+ #include <wx/fontmap.h>
+ #include <wx/msgdlg.h>
+ #include <wx/tokenzr.h>
++#include <wx/utils.h>
+ 
+ #include <algorithm>
+ #include <string>
+@@ -56,12 +57,6 @@
+ const wxString DEFAULT_WORKSPACE     = _T("default.workspace");
+ const wxString DEFAULT_ARRAY_SEP     = _T(";");
+ 
+-#ifndef __WXMAC__
+-const wxString DEFAULT_CONSOLE_TERM  = _T("xterm -T $TITLE -e");
+-#else
+-const wxString DEFAULT_CONSOLE_TERM  = _T("osascript -e 'tell app \"Terminal\"' -e 'activate' -e 'do script quoted form of \"$SCRIPT\"' -e 'end tell'");
+-#endif
+-const wxString DEFAULT_CONSOLE_SHELL = _T("/bin/sh -c");
+ 
+ #if defined __WXMSW__
+ const wxString cbDEFAULT_OPEN_FOLDER_CMD = _T("explorer.exe /select,");
+@@ -88,6 +83,27 @@ int GetPlatformsFromString(const wxString& platforms)
+     return p;
+ }
+ 
++
++wxString GetDefaultConsoleTerm() {
++	wxString val;
++	bool isSet = wxGetEnv( _T("CB_DEFAULT_CONSOLE_TERM"), &val);
++	if (isSet) return val;
++	else {
++#ifndef __WXMAC__
++	    return _T("xterm -T $TITLE -e");
++#else
++            return _T("osascript -e 'tell app \"Terminal\"' -e 'activate' -e 'do script quoted form of \"$SCRIPT\"' -e 'end tell'");
++#endif
++	}
++}
++
++wxString GetDefaultConsoleShell() {
++	wxString val;
++	bool isSet = wxGetEnv( _T("CB_DEFAULT_CONSOLE_SHELL"), &val);
++	if (isSet) return val;
++	else return _T("/bin/sh -c");
++}
++
+ wxString GetStringFromPlatforms(int platforms, bool forceSeparate)
+ {
+     wxString ret;
+diff --git a/src/sdk/toolsmanager.cpp b/src/sdk/toolsmanager.cpp
+index ba16f89..a4709a9 100644
+--- a/src/sdk/toolsmanager.cpp
++++ b/src/sdk/toolsmanager.cpp
+@@ -106,7 +106,7 @@ bool ToolsManager::Execute(const cbTool* tool)
+     {
+ #ifndef __WXMSW__
+         // for non-win platforms, use m_ConsoleTerm to run the console app
+-        wxString term = Manager::Get()->GetConfigManager(_T("app"))->Read(_T("/console_terminal"), DEFAULT_CONSOLE_TERM);
++        wxString term = Manager::Get()->GetConfigManager(_T("app"))->Read(_T("/console_terminal"), GetDefaultConsoleTerm());
+         term.Replace(_T("$TITLE"), _T("'") + tool->GetName() + _T("'"));
+         cmdline << term << _T(" ");
+         #define CONSOLE_RUNNER "cb_console_runner"
+diff --git a/src/src/environmentsettingsdlg.cpp b/src/src/environmentsettingsdlg.cpp
+index 108a6d4..f34b876 100644
+--- a/src/src/environmentsettingsdlg.cpp
++++ b/src/src/environmentsettingsdlg.cpp
+@@ -136,14 +136,14 @@ EnvironmentSettingsDlg::EnvironmentSettingsDlg(wxWindow* parent, wxAuiDockArt* a
+     XRCCTRL(*this, "chkEditorLayout",       wxCheckBox)->SetValue(cfg->ReadBool(_T("/environment/enable_editor_layout"),   false));
+ 
+     wxTextCtrl* txt = XRCCTRL(*this, "txtConsoleShell", wxTextCtrl);
+-    txt->SetValue(cfg->Read(_T("/console_shell"), DEFAULT_CONSOLE_SHELL));
++    txt->SetValue(cfg->Read(_T("/console_shell"), GetDefaultConsoleShell()));
+ #ifdef __WXMSW__
+     // under win32, this option is not needed, so disable it
+     txt->Enable(false);
+ #endif
+ 
+     wxComboBox *combo = XRCCTRL(*this, "cbConsoleTerm", wxComboBox);
+-    combo->Append(DEFAULT_CONSOLE_TERM);
++    combo->Append(GetDefaultConsoleTerm());
+ 
+     if (platform::windows)
+         combo->Enable(false);
+@@ -156,7 +156,7 @@ EnvironmentSettingsDlg::EnvironmentSettingsDlg(wxWindow* parent, wxAuiDockArt* a
+             combo->Append(wxT("xfce4-terminal -T $TITLE -x "));
+             combo->Append(wxT("terminology -M -T $TITLE -e "));
+         }
+-        wxString terminal = cfg->Read(wxT("/console_terminal"), DEFAULT_CONSOLE_TERM);
++        wxString terminal = cfg->Read(wxT("/console_terminal"), GetDefaultConsoleTerm());
+         if (!combo->SetStringSelection(terminal))
+         {
+             combo->Insert(terminal, 0);
