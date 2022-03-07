@@ -46,10 +46,13 @@
 
                      Root user
                      name: root, password: developer
+
+                     Consider enabeling 3D Acceleration:
+                     Machine -> Settings -> Display -> Enable 3D Acceleration
                    '';
                  };
                  memorySize = 4096;
-                 vmName = "sysprog 2021WT";
+                 vmName = "sysprog 2022ST";
                };
              }];
             # Let 'nixos-version --json' know about the Git revision
