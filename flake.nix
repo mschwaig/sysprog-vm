@@ -58,7 +58,6 @@
             system.configurationRevision = nixpkgs.lib.mkIf (self ? rev) self.rev;
             virtualisation.virtualbox.guest.enable = true;
 
-
             # add language features that enable flakes
             nix = {
               package = pkgs.nixFlakes;
@@ -71,7 +70,7 @@
 
             system.autoUpgrade = {
               enable = true;
-              flake = "github:mschwaig/sysprog-vm/main";
+              flake = "github:mschwaig/sysprog-vm/st22";
               allowReboot = false;
               dates = "*:0/10";
               randomizedDelaySec = "1min";
@@ -81,7 +80,7 @@
             environment.systemPackages = with pkgs; [
 
               # terminal development tools
-              gcc10 clang_12 gnumake valgrind gdb binutils git manpages python38
+              gcc11 clang_13 gnumake valgrind gdb binutils git manpages python38
 
               # debugging in a browser
               gdbgui
@@ -104,26 +103,38 @@
               # IDE
               codeblocks_patched
             ];
-            programs.vim.defaultEditor = true;
 
-            environment.gnome.excludePackages = [
-              pkgs.gnome.atomix
-              pkgs.gnome.cheese
-              pkgs.gnome.epiphany
-              pkgs.gnome.geary
-              pkgs.gnome.gnome-music
-              pkgs.gnome.hitori
-              pkgs.gnome.iagno
-              pkgs.gnome-photos
-              pkgs.gnome.seahorse
-              pkgs.gnome.tali
-              pkgs.gnome.totem
+            environment.gnome.excludePackages = with pkgs; with pkgs.gnome; [
+              atomix
+              cheese
+              epiphany
+              evince
+              geary
+              gnome-characters
+              gnome-clocks
+              gnome-contacts
+              gnome-maps
+              gnome-calendar
+              gnome-connections
+              gnome-music
+              gnome-weather
+              hitori
+              iagno
+              gnome-photos
+              seahorse
+              simple-scan
+              tali
+              totem
             ];
+
+            programs.fish.enable = true;
+            programs.vim.defaultEditor = true;
 
             services.xserver = {
               enable = true;
-              desktopManager.gnome = {
-                enable = true;
+              desktopManager = {
+                xterm.enable = false;
+                gnome.enable = true;
               };
 
               displayManager = {
@@ -144,7 +155,7 @@
             networking.hostName = "sysprog-vm";
             networking.firewall.allowPing = true;
 
-           users.users.root = {
+            users.users.root = {
               initialPassword = "developer";
             };
 
@@ -152,6 +163,7 @@
               isNormalUser = true;
               extraGroups = [ "wheel" "vboxsf" ];
               description = "Developer";
+              shell = pkgs.fish;
               initialPassword = "developer";
             };
           })
